@@ -2,336 +2,693 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>THE CHANAKYA AI Reel Maker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>श्रीकृष्ण और शिशुपाल | दिव्य कथा</title>
 
 <style>
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --gold: #ffd778;
+    --blue: #55dfff;
+    --white: #fff9eb;
+}
 
 body {
-  margin: 0;
-  padding: 15px;
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  color: #222;
+    background: #030714;
+    color: white;
+    font-family: "Noto Sans Devanagari", "Mangal", Arial, sans-serif;
 }
 
-h1 {
-  color: #b87500;
-  font-size: 23px;
+.player {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    height: 100dvh;
+    min-height: 600px;
+    margin: auto;
+    overflow: hidden;
+    background: #07132c;
 }
 
-.container {
-  max-width: 600px;
-  margin: auto;
-  background: white;
-  padding: 15px;
-  border-radius: 12px;
+#sky {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
 }
 
-input, textarea, select, button {
-  width: 100%;
-  padding: 12px;
-  margin: 7px 0 12px;
-  font-size: 16px;
-  border-radius: 7px;
-  border: 1px solid #ccc;
+.background {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 35%,
+        #315da0aa, transparent 48%),
+      linear-gradient(180deg,
+        #091b41 0%, #241647 55%, #050914 100%);
+    transition: background 1.5s;
 }
 
-button {
-  background: #f5b400;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
+.temple {
+    position: absolute;
+    inset: 0;
+    opacity: .28;
+    background:
+      linear-gradient(90deg,
+        transparent 9%, #cda45c 10%,
+        transparent 12%, transparent 88%,
+        #cda45c 90%, transparent 92%);
 }
 
-canvas {
-  display: block;
-  width: 100%;
-  max-width: 300px;
-  margin: 15px auto;
-  background: #111;
-  border-radius: 10px;
+.top {
+    position: absolute;
+    z-index: 5;
+    top: 20px;
+    left: 18px;
+    right: 18px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--gold);
 }
 
 .scene {
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin: 12px 0;
-  border-radius: 8px;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: 75px 24px 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.08);
+    transition: opacity 1s, transform 1.4s, visibility 1s;
 }
 
-.note {
-  font-size: 13px;
-  color: #555;
-  line-height: 1.5;
+.scene.active {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+.chapter {
+    color: var(--gold);
+    font-size: 12px;
+    letter-spacing: 3px;
+    margin-bottom: 22px;
+}
+
+.art {
+    font-size: clamp(70px, 18vw, 105px);
+    line-height: 1.4;
+    margin-bottom: 18px;
+    filter: drop-shadow(0 0 20px #ffca68aa);
+    animation: float 4s ease-in-out infinite;
+}
+
+h1 {
+    color: var(--gold);
+    font-size: clamp(27px, 7vw, 39px);
+    line-height: 1.5;
+    text-shadow: 0 0 20px #ffbd4b55;
+    margin-bottom: 15px;
+}
+
+.story {
+    max-width: 450px;
+    font-size: clamp(15px, 4vw, 18px);
+    line-height: 2;
+    color: #fff4df;
+    text-shadow: 0 2px 10px #000;
+}
+
+.quote {
+    color: #8feaff;
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.glow {
+    position: absolute;
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    background: #ffcb5720;
+    filter: blur(45px);
+    animation: pulse 4s infinite alternate;
+}
+
+.controls {
+    position: absolute;
+    z-index: 10;
+    left: 15px;
+    right: 15px;
+    bottom: 24px;
+    padding: 15px;
+    border: 1px solid #ffffff35;
+    border-radius: 14px;
+    background: #040a1cdd;
+    backdrop-filter: blur(12px);
+}
+
+.progress {
+    height: 4px;
+    background: #ffffff30;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+#bar {
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #4ddfff, #ffd778);
+}
+
+.buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+button {
+    border: 1px solid #e8c87970;
+    border-radius: 7px;
+    padding: 10px 12px;
+    background: #152443;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+button:active {
+    background: #3b507b;
+}
+
+#time {
+    color: var(--gold);
+    font-size: 12px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+#caption {
+    position: absolute;
+    z-index: 8;
+    left: 16px;
+    right: 16px;
+    bottom: 145px;
+    padding: 10px;
+    border-radius: 8px;
+    background: #030817c9;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.8;
+    color: white;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+@keyframes pulse {
+    from { transform: scale(.8); opacity: .5; }
+    to { transform: scale(1.3); opacity: 1; }
+}
+
+@media (max-height: 700px) {
+    .scene {
+        padding-top: 55px;
+        padding-bottom: 135px;
+    }
+
+    .art {
+        font-size: 65px;
+        margin-bottom: 5px;
+    }
+
+    h1 {
+        font-size: 25px;
+        margin-bottom: 8px;
+    }
+
+    .story {
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    #caption {
+        bottom: 130px;
+    }
 }
 </style>
 </head>
 
 <body>
-<div class="container">
 
-<h1>THE CHANAKYA AI</h1>
-<p>Create a 1-minute educational reel.</p>
+<main class="player">
 
-<label>Reel Title</label>
-<input id="title" value="AI क्या है?">
+    <canvas id="sky"></canvas>
 
-<label>Duration</label>
-<input value="60 seconds — 6 scenes × 10 seconds" disabled>
+    <div class="background" id="background"></div>
+    <div class="temple"></div>
 
-<div id="scenes"></div>
+    <header class="top">
+        <span>॥ श्रीकृष्ण शरणम् ॥</span>
+        <span>दिव्य कथा</span>
+    </header>
 
-<button onclick="previewScene()">Preview Current Scene</button>
-<button onclick="startVideo()">Play 1-Minute Preview</button>
-<button onclick="exportVideo()">Export WebM Video</button>
+    <!-- SCENE 1 -->
+    <section class="scene active" data-duration="35">
+        <div class="glow"></div>
+        <div class="chapter">प्रथम अध्याय · 00:00</div>
+        <div class="art">🦚</div>
+        <h1>श्रीकृष्ण और शिशुपाल</h1>
+        <p class="story">
+            जब धर्म की सभा में अहंकार ने अपनी सारी सीमाएँ पार कर दीं,
+            तब भगवान श्रीकृष्ण ने एक ऐसा निर्णय लिया,
+            जिसने इतिहास में धर्म और क्षमा की एक अमर कथा लिख दी।
+        </p>
+        <p class="quote">यह कथा है क्षमा, प्रतिज्ञा और धर्म की।</p>
+    </section>
 
-<canvas id="canvas" width="540" height="960"></canvas>
+    <!-- SCENE 2 -->
+    <section class="scene" data-duration="35">
+        <div class="chapter">द्वितीय अध्याय · 00:35</div>
+        <div class="art">👶✨</div>
+        <h1>शिशुपाल का जन्म</h1>
+        <p class="story">
+            चेदि देश के राजा के घर शिशुपाल का जन्म हुआ।
+            पौराणिक कथा के अनुसार, जन्म के समय उसके अतिरिक्त हाथ और आँखें थीं।
+            उसके माता-पिता चिंतित हो उठे।
+            तभी आकाशवाणी हुई कि जिस व्यक्ति की गोद में जाते ही
+            उसके अतिरिक्त अंग लुप्त हो जाएँगे, वही उसके जीवन का अंत करेगा।
+            जब श्रीकृष्ण ने शिशुपाल को गोद में लिया,
+            तो भविष्यवाणी का रहस्य सामने आ गया।
+        </p>
+        <p class="quote">
+            शिशुपाल की माता ने कृष्ण से अपने पुत्र को क्षमा करने का वचन माँगा।
+        </p>
+    </section>
 
-<p class="note" id="status">
-Ready. Edit the scene text and preview your reel.
-</p>
+    <!-- SCENE 3 -->
+    <section class="scene" data-duration="35">
+        <div class="chapter">तृतीय अध्याय · 01:10</div>
+        <div class="art">👑⚔️</div>
+        <h1>अहंकार का उदय</h1>
+        <p class="story">
+            समय बीतता गया। शिशुपाल बड़ा होकर चेदि देश का राजा बना।
+            लेकिन उसके मन में श्रीकृष्ण के प्रति द्वेष बढ़ता गया।
+            वह बार-बार कृष्ण का अपमान करता और उनके गुणों को स्वीकार
+            करने से इनकार करता था।
+            उसकी दृष्टि में शक्ति और राजसी वैभव ही सब कुछ थे।
+            वह भूल गया कि सच्ची महानता केवल पद या शक्ति से नहीं,
+            बल्कि आचरण और धर्म से पहचानी जाती है।
+        </p>
+        <p class="quote">अहंकार मनुष्य की बुद्धि पर पर्दा डाल देता है।</p>
+    </section>
 
-<p class="note">
-Video export depends on browser support. The exported file may be WebM rather than MP4.
-</p>
+    <!-- SCENE 4 -->
+    <section class="scene" data-duration="40">
+        <div class="chapter">चतुर्थ अध्याय · 01:45</div>
+        <div class="art">🏛️🪔</div>
+        <h1>राजसूय यज्ञ की सभा</h1>
+        <p class="story">
+            इंद्रप्रस्थ में धर्मराज युधिष्ठिर ने राजसूय यज्ञ का आयोजन किया।
+            देश-देशांतर से राजा, ऋषि और महान योद्धा सभा में पहुँचे।
+            अब समय आया अग्रपूजा का, अर्थात सभा में सर्वश्रेष्ठ अतिथि
+            का सम्मान करने का।
+            भीष्म पितामह ने भगवान श्रीकृष्ण को इस सम्मान के योग्य बताया।
+            युधिष्ठिर ने श्रद्धापूर्वक कृष्ण की अग्रपूजा की।
+            सभा में अनेक महान व्यक्तियों ने इस निर्णय का स्वागत किया।
+        </p>
+        <p class="quote">लेकिन यह सम्मान शिशुपाल को सहन नहीं हुआ।</p>
+    </section>
 
-</div>
+    <!-- SCENE 5 -->
+    <section class="scene" data-duration="40">
+        <div class="chapter">पंचम अध्याय · 02:25</div>
+        <div class="art">😡🔥</div>
+        <h1>शिशुपाल का अपमान</h1>
+        <p class="story">
+            शिशुपाल क्रोध से भर उठा। वह सभा के बीच खड़ा होकर
+            श्रीकृष्ण के विरुद्ध कटु वचन कहने लगा।
+            उसने कृष्ण की योग्यता पर प्रश्न उठाए और सभा के महान
+            व्यक्तियों का भी अपमान किया।
+            उसकी वाणी में न सम्मान था, न विवेक।
+            सभा का वातावरण तनावपूर्ण हो गया।
+            अनेक योद्धा उसके व्यवहार से क्रोधित हुए,
+            लेकिन भगवान श्रीकृष्ण शांत भाव से उसकी बातें सुनते रहे।
+        </p>
+        <p class="quote">श्रीकृष्ण का धैर्य उनकी कमजोरी नहीं, उनकी शक्ति थी।</p>
+    </section>
+
+    <!-- SCENE 6 -->
+    <section class="scene" data-duration="40">
+        <div class="chapter">षष्ठ अध्याय · 03:05</div>
+        <div class="art">🙏💙</div>
+        <h1>क्षमा की अंतिम सीमा</h1>
+        <p class="story">
+            भगवान श्रीकृष्ण ने शिशुपाल की माता को दिया हुआ वचन याद रखा था।
+            उन्होंने उसके सौ अपराधों तक उसे क्षमा करने का संकल्प लिया था।
+            इसलिए सभा में लगातार अपमान होने पर भी वे धैर्यपूर्वक
+            उसकी सीमाएँ पार करने की प्रतीक्षा करते रहे।
+            परंतु शिशुपाल ने रुकने के बजाय अपने अपमानजनक शब्द जारी रखे।
+            अंततः उसने वह सीमा भी पार कर दी,
+            जिसके बाद श्रीकृष्ण के लिए अपना वचन पूरा करने का समय आ गया।
+        </p>
+        <p class="quote">क्षमा महान है, लेकिन अधर्म को अनंत संरक्षण नहीं मिलता।</p>
+    </section>
+
+    <!-- SCENE 7 -->
+    <section class="scene" data-duration="40">
+        <div class="chapter">सप्तम अध्याय · 03:45</div>
+        <div class="art">☀️🌀</div>
+        <h1>सुदर्शन चक्र का प्रहार</h1>
+        <p class="story">
+            भगवान श्रीकृष्ण ने शिशुपाल को अंतिम अवसर दिया,
+            लेकिन उसका अहंकार शांत नहीं हुआ।
+            तब श्रीकृष्ण ने अपना दिव्य सुदर्शन चक्र धारण किया।
+            सभा में उपस्थित सभी लोग इस दिव्य घटना को देखने लगे।
+            भगवान ने सुदर्शन चक्र चलाया,
+            और शिशुपाल का अंत हो गया।
+            इस प्रकार राजसूय यज्ञ की सभा में उसके अपमान और
+            अधर्मपूर्ण व्यवहार का अंत हुआ।
+        </p>
+        <p class="quote">जब सभी सीमाएँ टूट जाती हैं, तब कर्म का फल सामने आता है।</p>
+    </section>
+
+    <!-- SCENE 8 -->
+    <section class="scene" data-duration="35">
+        <div class="chapter">अष्टम अध्याय · 04:25</div>
+        <div class="art">✨🦚✨</div>
+        <h1>अहंकार का अंत, धर्म की विजय</h1>
+        <p class="story">
+            पौराणिक परंपरा में वर्णन मिलता है कि शिशुपाल के शरीर से
+            निकला दिव्य तेज भगवान श्रीकृष्ण में समा गया।
+            यह प्रसंग उसकी मुक्ति से भी जोड़ा जाता है।
+            इस कथा का संदेश है कि क्षमा को कमजोरी नहीं समझना चाहिए,
+            वाणी पर संयम रखना चाहिए और अहंकार से दूर रहना चाहिए।
+            भगवान श्रीकृष्ण ने धैर्य रखा, अपना वचन निभाया
+            और अंततः धर्म की मर्यादा स्थापित की।
+        </p>
+        <p class="quote">
+            जय श्रीकृष्ण! धर्म की विजय हो।
+        </p>
+    </section>
+
+    <div id="caption">
+        भगवान श्रीकृष्ण की दिव्य कथा
+    </div>
+
+    <div class="controls">
+        <div class="progress">
+            <div id="bar"></div>
+        </div>
+
+        <div class="buttons">
+            <button id="play">▶ शुरू करें</button>
+            <button id="prev">◀ पिछला</button>
+            <button id="next">अगला ▶</button>
+            <button id="voice">🔊 वाणी चालू</button>
+            <button id="full">⛶ Fullscreen</button>
+        </div>
+
+        <div id="time">00:00 / 05:00</div>
+    </div>
+
+</main>
 
 <script>
-const data = [
-{
-title: "AI क्या है?",
-text: "Artificial Intelligence यानी मशीनों को ऐसे काम करने की क्षमता देना जिनमें आम तौर पर इंसानी समझ की जरूरत होती है।"
-},
-{
-title: "AI कैसे काम करता है?",
-text: "AI डेटा से पैटर्न सीखता है और उन पैटर्न की मदद से जवाब, अनुमान या सुझाव देता है।"
-},
-{
-title: "Machine Learning",
-text: "Machine Learning में कंप्यूटर उदाहरणों से सीखता है और समय के साथ अपने परिणाम बेहतर कर सकता है।"
-},
-{
-title: "AI के उपयोग",
-text: "AI का उपयोग शिक्षा, स्वास्थ्य, रिसर्च, डिजाइन, बिजनेस और रोजमर्रा के डिजिटल कामों में होता है।"
-},
-{
-title: "AI के फायदे",
-text: "AI समय बचाने, विचार तैयार करने और जटिल कामों को आसान बनाने में मदद कर सकता है।"
-},
-{
-title: "AI का सही उपयोग करें",
-text: "AI से मिली जानकारी की जाँच करें, निजी डेटा सुरक्षित रखें और AI को एक सहायक की तरह इस्तेमाल करें।"
-}
-];
+const scenes = [...document.querySelectorAll(".scene")];
+const bar = document.getElementById("bar");
+const timeDisplay = document.getElementById("time");
+const caption = document.getElementById("caption");
+const playButton = document.getElementById("play");
+const voiceButton = document.getElementById("voice");
 
-let current = 0;
-let timer = null;
+const durations = scenes.map(s => Number(s.dataset.duration));
+const total = durations.reduce((a, b) => a + b, 0);
 
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+let index = 0;
+let elapsed = 0;
+let running = false;
+let lastTime = 0;
+let voiceEnabled = false;
+let utterance = null;
+let animationId = null;
 
-function createScenes() {
-  const area = document.getElementById("scenes");
-
-  data.forEach((scene, i) => {
-    const div = document.createElement("div");
-    div.className = "scene";
-
-    div.innerHTML = `
-      <h3>Scene ${i + 1} — 10 seconds</h3>
-      <label>Heading</label>
-      <input id="heading${i}" value="${scene.title}">
-      <label>Text</label>
-      <textarea id="text${i}" rows="4">${scene.text}</textarea>
-      <button onclick="showScene(${i})">Select Scene ${i + 1}</button>
-    `;
-
-    area.appendChild(div);
-  });
+function formatTime(seconds) {
+    seconds = Math.floor(seconds);
+    return String(Math.floor(seconds / 60)).padStart(2, "0")
+        + ":" + String(seconds % 60).padStart(2, "0");
 }
 
-function getScene(i) {
-  return {
-    title: document.getElementById("heading" + i).value,
-    text: document.getElementById("text" + i).value
-  };
+function getStart(i) {
+    return durations.slice(0, i).reduce((a, b) => a + b, 0);
 }
 
-function drawScene(i) {
-  current = i;
-  const scene = getScene(i);
-
-  ctx.fillStyle = "#101827";
-  ctx.fillRect(0, 0, 540, 960);
-
-  ctx.fillStyle = "#f5b400";
-  ctx.fillRect(40, 50, 100, 7);
-
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 22px Arial";
-  ctx.fillText("THE CHANAKYA AI", 40, 95);
-
-  ctx.strokeStyle = "#f5b400";
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.roundRect(80, 160, 380, 180, 20);
-  ctx.stroke();
-
-  ctx.fillStyle = "#f5b400";
-  ctx.font = "bold 35px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText("AI", 270, 260);
-
-  ctx.textAlign = "left";
-  ctx.fillStyle = "#f5b400";
-  ctx.fillRect(40, 390, 65, 5);
-
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 34px Arial";
-
-  wrapText(scene.title, 40, 450, 460, 43, 3);
-
-  ctx.font = "25px Arial";
-  wrapText(scene.text, 40, 555, 460, 39, 6);
-
-  ctx.fillStyle = "#f5b400";
-  ctx.fillRect(40, 880, 460, 3);
-
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "18px Arial";
-  ctx.fillText("SCENE " + (i + 1) + " / 6", 40, 920);
-}
-
-function wrapText(text, x, y, maxWidth, lineHeight, maxLines) {
-  const words = text.split(/\s+/);
-  let line = "";
-  let lines = [];
-
-  for (const word of words) {
-    const test = line ? line + " " + word : word;
-
-    if (ctx.measureText(test).width > maxWidth && line) {
-      lines.push(line);
-      line = word;
-    } else {
-      line = test;
+function stopVoice() {
+    if ("speechSynthesis" in window) {
+        speechSynthesis.cancel();
     }
-  }
+}
 
-  if (line) lines.push(line);
+function speakScene(i) {
+    stopVoice();
 
-  lines.slice(0, maxLines).forEach((line, i) => {
-    ctx.fillText(line, x, y + i * lineHeight);
-  });
+    if (!voiceEnabled || !("speechSynthesis" in window)) return;
+
+    const scene = scenes[i];
+    const title = scene.querySelector("h1")?.innerText || "";
+    const story = scene.querySelector(".story")?.innerText || "";
+    const quote = scene.querySelector(".quote")?.innerText || "";
+
+    utterance = new SpeechSynthesisUtterance(
+        title + ". " + story + " " + quote
+    );
+
+    utterance.lang = "hi-IN";
+    utterance.rate = 0.85;
+    utterance.pitch = 1;
+
+    const voices = speechSynthesis.getVoices();
+    const hindiVoice = voices.find(v => v.lang.toLowerCase().startsWith("hi"));
+
+    if (hindiVoice) utterance.voice = hindiVoice;
+
+    speechSynthesis.speak(utterance);
 }
 
 function showScene(i) {
-  drawScene(i);
-  document.getElementById("status").textContent =
-    "Showing scene " + (i + 1) + " of 6.";
+    index = Math.max(0, Math.min(i, scenes.length - 1));
+
+    scenes.forEach((scene, n) => {
+        scene.classList.toggle("active", n === index);
+    });
+
+    const title = scenes[index].querySelector("h1").innerText;
+    caption.textContent = title;
+
+    const colors = [
+        "#07132c",
+        "#311e42",
+        "#351c2b",
+        "#422b13",
+        "#42171d",
+        "#152c51",
+        "#41271a",
+        "#17153e"
+    ];
+
+    document.getElementById("background").style.background =
+        "radial-gradient(ellipse at 50% 35%, #547bc455, transparent 48%), linear-gradient(180deg, "
+        + colors[index] + ", #050914)";
+
+    speakScene(index);
 }
 
-function previewScene() {
-  showScene(current);
-}
+function tick(timestamp) {
+    if (!running) return;
 
-function startVideo() {
-  if (timer) clearInterval(timer);
+    if (!lastTime) lastTime = timestamp;
 
-  let index = 0;
-  drawScene(index);
+    const delta = Math.min((timestamp - lastTime) / 1000, 0.25);
+    lastTime = timestamp;
 
-  document.getElementById("status").textContent =
-    "Playing six scenes, 10 seconds each.";
+    elapsed += delta;
 
-  timer = setInterval(() => {
-    index++;
-
-    if (index >= 6) {
-      clearInterval(timer);
-      timer = null;
-      document.getElementById("status").textContent =
-        "60-second preview finished.";
-      return;
+    if (elapsed >= total) {
+        elapsed = total;
+        running = false;
+        playButton.textContent = "↻ फिर से चलाएँ";
+        stopVoice();
     }
 
-    drawScene(index);
-  }, 10000);
-}
+    let accumulated = 0;
+    let newIndex = durations.length - 1;
 
-function exportVideo() {
-  if (!canvas.captureStream || !window.MediaRecorder) {
-    document.getElementById("status").textContent =
-      "Video export is not supported in this browser. Try an updated browser.";
-    return;
-  }
-
-  const mime = [
-    "video/webm;codecs=vp9",
-    "video/webm;codecs=vp8",
-    "video/webm"
-  ].find(type => MediaRecorder.isTypeSupported(type));
-
-  if (!mime) {
-    document.getElementById("status").textContent =
-      "WebM recording is unavailable in this browser.";
-    return;
-  }
-
-  const stream = canvas.captureStream(30);
-  const recorder = new MediaRecorder(stream, { mimeType: mime });
-  const chunks = [];
-
-  recorder.ondataavailable = event => {
-    if (event.data.size > 0) chunks.push(event.data);
-  };
-
-  recorder.onstop = () => {
-    const blob = new Blob(chunks, { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.download = "chanakya-ai-60-second-reel.webm";
-    a.click();
-
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
-
-    stream.getTracks().forEach(track => track.stop());
-
-    document.getElementById("status").textContent =
-      "Video export finished. Check your Downloads folder.";
-  };
-
-  let index = 0;
-
-  drawScene(index);
-  recorder.start();
-
-  const advance = () => {
-    index++;
-
-    if (index >= 6) {
-      clearInterval(timer);
-      timer = null;
-      recorder.stop();
-      return;
+    for (let i = 0; i < durations.length; i++) {
+        if (elapsed < accumulated + durations[i]) {
+            newIndex = i;
+            break;
+        }
+        accumulated += durations[i];
     }
 
-    drawScene(index);
-  };
+    if (newIndex !== index && elapsed < total) {
+        showScene(newIndex);
+    }
 
-  timer = setInterval(advance, 10000);
+    bar.style.width = (elapsed / total * 100) + "%";
+    timeDisplay.textContent =
+        formatTime(elapsed) + " / " + formatTime(total);
 
-  document.getElementById("status").textContent =
-    "Recording for 60 seconds. Keep this page open.";
+    if (running) {
+        animationId = requestAnimationFrame(tick);
+    }
 }
 
-createScenes();
-drawScene(0);
+function start() {
+    if (elapsed >= total) {
+        elapsed = 0;
+        showScene(0);
+    }
+
+    running = true;
+    lastTime = 0;
+    playButton.textContent = "❚❚ रोकें";
+
+    if (voiceEnabled) speakScene(index);
+
+    cancelAnimationFrame(animationId);
+    animationId = requestAnimationFrame(tick);
+}
+
+function pause() {
+    running = false;
+    playButton.textContent = "▶ जारी रखें";
+    stopVoice();
+    cancelAnimationFrame(animationId);
+}
+
+playButton.addEventListener("click", () => {
+    if (running) {
+        pause();
+    } else {
+        start();
+    }
+});
+
+document.getElementById("next").addEventListener("click", () => {
+    elapsed = getStart(Math.min(index + 1, scenes.length - 1));
+    showScene(Math.min(index + 1, scenes.length - 1));
+    if (running) {
+        lastTime = 0;
+    }
+});
+
+document.getElementById("prev").addEventListener("click", () => {
+    elapsed = getStart(Math.max(index - 1, 0));
+    showScene(Math.max(index - 1, 0));
+    if (running) {
+        lastTime = 0;
+    }
+});
+
+voiceButton.addEventListener("click", () => {
+    voiceEnabled = !voiceEnabled;
+    voiceButton.textContent = voiceEnabled
+        ? "🔊 वाणी बंद करें"
+        : "🔇 वाणी चालू";
+
+    if (voiceEnabled) {
+        speakScene(index);
+    } else {
+        stopVoice();
+    }
+});
+
+document.getElementById("full").addEventListener("click", () => {
+    const player = document.querySelector(".player");
+
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    } else if (player.requestFullscreen) {
+        player.requestFullscreen();
+    }
+});
+
+/* Animated stars and divine particles */
+const canvas = document.getElementById("sky");
+const ctx = canvas.getContext("2d");
+let particles = [];
+
+function resize() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    particles = Array.from({length: 65}, () => ({
+        x: Math.random() * rect.width,
+        y: Math.random() * rect.height,
+        r: Math.random() * 2 + 0.5,
+        speed: Math.random() * 0.5 + 0.15,
+        alpha: Math.random()
+    }));
+}
+
+function draw() {
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+
+    ctx.clearRect(0, 0, w, h);
+
+    for (const p of particles) {
+        p.y -= p.speed;
+        p.alpha += (Math.random() - 0.5) * 0.06;
+
+        if (p.y < 0) {
+            p.y = h;
+            p.x = Math.random() * w;
+        }
+
+        p.alpha = Math.max(0.2, Math.min(1, p.alpha));
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,215,120,${p.alpha})`;
+        ctx.shadowColor = "#ffd778";
+        ctx.shadowBlur = 10;
+        ctx.fill();
+    }
+
+    ctx.shadowBlur = 0;
+    requestAnimationFrame(draw);
+}
+
+window.addEventListener("resize", resize);
+
+resize();
+draw();
+showScene(0);
 </script>
+
 </body>
 </html>
