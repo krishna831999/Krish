@@ -1,32 +1,337 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>THE CHANAKYA AI</title>
+<title>THE CHANAKYA AI Reel Maker</title>
+
 <style>
+* { box-sizing: border-box; }
+
 body {
+  margin: 0;
+  padding: 15px;
   font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 40px 15px;
-  background: #fff8e7;
+  background: #f5f5f5;
+  color: #222;
 }
-h1 { color: #d97706; }
+
+h1 {
+  color: #b87500;
+  font-size: 23px;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+input, textarea, select, button {
+  width: 100%;
+  padding: 12px;
+  margin: 7px 0 12px;
+  font-size: 16px;
+  border-radius: 7px;
+  border: 1px solid #ccc;
+}
+
 button {
-  padding: 14px 24px;
-  background: #f59e0b;
-  color: white;
+  background: #f5b400;
   border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 15px auto;
+  background: #111;
+  border-radius: 10px;
+}
+
+.scene {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 12px 0;
   border-radius: 8px;
-  font-size: 18px;
+}
+
+.note {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
 }
 </style>
 </head>
+
 <body>
+<div class="container">
+
 <h1>THE CHANAKYA AI</h1>
-<p>Welcome to your AI Reel Maker!</p>
-<button onclick="alert('Your website is working!')">
-Test Website
-</button>
+<p>Create a 1-minute educational reel.</p>
+
+<label>Reel Title</label>
+<input id="title" value="AI क्या है?">
+
+<label>Duration</label>
+<input value="60 seconds — 6 scenes × 10 seconds" disabled>
+
+<div id="scenes"></div>
+
+<button onclick="previewScene()">Preview Current Scene</button>
+<button onclick="startVideo()">Play 1-Minute Preview</button>
+<button onclick="exportVideo()">Export WebM Video</button>
+
+<canvas id="canvas" width="540" height="960"></canvas>
+
+<p class="note" id="status">
+Ready. Edit the scene text and preview your reel.
+</p>
+
+<p class="note">
+Video export depends on browser support. The exported file may be WebM rather than MP4.
+</p>
+
+</div>
+
+<script>
+const data = [
+{
+title: "AI क्या है?",
+text: "Artificial Intelligence यानी मशीनों को ऐसे काम करने की क्षमता देना जिनमें आम तौर पर इंसानी समझ की जरूरत होती है।"
+},
+{
+title: "AI कैसे काम करता है?",
+text: "AI डेटा से पैटर्न सीखता है और उन पैटर्न की मदद से जवाब, अनुमान या सुझाव देता है।"
+},
+{
+title: "Machine Learning",
+text: "Machine Learning में कंप्यूटर उदाहरणों से सीखता है और समय के साथ अपने परिणाम बेहतर कर सकता है।"
+},
+{
+title: "AI के उपयोग",
+text: "AI का उपयोग शिक्षा, स्वास्थ्य, रिसर्च, डिजाइन, बिजनेस और रोजमर्रा के डिजिटल कामों में होता है।"
+},
+{
+title: "AI के फायदे",
+text: "AI समय बचाने, विचार तैयार करने और जटिल कामों को आसान बनाने में मदद कर सकता है।"
+},
+{
+title: "AI का सही उपयोग करें",
+text: "AI से मिली जानकारी की जाँच करें, निजी डेटा सुरक्षित रखें और AI को एक सहायक की तरह इस्तेमाल करें।"
+}
+];
+
+let current = 0;
+let timer = null;
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+function createScenes() {
+  const area = document.getElementById("scenes");
+
+  data.forEach((scene, i) => {
+    const div = document.createElement("div");
+    div.className = "scene";
+
+    div.innerHTML = `
+      <h3>Scene ${i + 1} — 10 seconds</h3>
+      <label>Heading</label>
+      <input id="heading${i}" value="${scene.title}">
+      <label>Text</label>
+      <textarea id="text${i}" rows="4">${scene.text}</textarea>
+      <button onclick="showScene(${i})">Select Scene ${i + 1}</button>
+    `;
+
+    area.appendChild(div);
+  });
+}
+
+function getScene(i) {
+  return {
+    title: document.getElementById("heading" + i).value,
+    text: document.getElementById("text" + i).value
+  };
+}
+
+function drawScene(i) {
+  current = i;
+  const scene = getScene(i);
+
+  ctx.fillStyle = "#101827";
+  ctx.fillRect(0, 0, 540, 960);
+
+  ctx.fillStyle = "#f5b400";
+  ctx.fillRect(40, 50, 100, 7);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 22px Arial";
+  ctx.fillText("THE CHANAKYA AI", 40, 95);
+
+  ctx.strokeStyle = "#f5b400";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.roundRect(80, 160, 380, 180, 20);
+  ctx.stroke();
+
+  ctx.fillStyle = "#f5b400";
+  ctx.font = "bold 35px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("AI", 270, 260);
+
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#f5b400";
+  ctx.fillRect(40, 390, 65, 5);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 34px Arial";
+
+  wrapText(scene.title, 40, 450, 460, 43, 3);
+
+  ctx.font = "25px Arial";
+  wrapText(scene.text, 40, 555, 460, 39, 6);
+
+  ctx.fillStyle = "#f5b400";
+  ctx.fillRect(40, 880, 460, 3);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "18px Arial";
+  ctx.fillText("SCENE " + (i + 1) + " / 6", 40, 920);
+}
+
+function wrapText(text, x, y, maxWidth, lineHeight, maxLines) {
+  const words = text.split(/\s+/);
+  let line = "";
+  let lines = [];
+
+  for (const word of words) {
+    const test = line ? line + " " + word : word;
+
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = test;
+    }
+  }
+
+  if (line) lines.push(line);
+
+  lines.slice(0, maxLines).forEach((line, i) => {
+    ctx.fillText(line, x, y + i * lineHeight);
+  });
+}
+
+function showScene(i) {
+  drawScene(i);
+  document.getElementById("status").textContent =
+    "Showing scene " + (i + 1) + " of 6.";
+}
+
+function previewScene() {
+  showScene(current);
+}
+
+function startVideo() {
+  if (timer) clearInterval(timer);
+
+  let index = 0;
+  drawScene(index);
+
+  document.getElementById("status").textContent =
+    "Playing six scenes, 10 seconds each.";
+
+  timer = setInterval(() => {
+    index++;
+
+    if (index >= 6) {
+      clearInterval(timer);
+      timer = null;
+      document.getElementById("status").textContent =
+        "60-second preview finished.";
+      return;
+    }
+
+    drawScene(index);
+  }, 10000);
+}
+
+function exportVideo() {
+  if (!canvas.captureStream || !window.MediaRecorder) {
+    document.getElementById("status").textContent =
+      "Video export is not supported in this browser. Try an updated browser.";
+    return;
+  }
+
+  const mime = [
+    "video/webm;codecs=vp9",
+    "video/webm;codecs=vp8",
+    "video/webm"
+  ].find(type => MediaRecorder.isTypeSupported(type));
+
+  if (!mime) {
+    document.getElementById("status").textContent =
+      "WebM recording is unavailable in this browser.";
+    return;
+  }
+
+  const stream = canvas.captureStream(30);
+  const recorder = new MediaRecorder(stream, { mimeType: mime });
+  const chunks = [];
+
+  recorder.ondataavailable = event => {
+    if (event.data.size > 0) chunks.push(event.data);
+  };
+
+  recorder.onstop = () => {
+    const blob = new Blob(chunks, { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = "chanakya-ai-60-second-reel.webm";
+    a.click();
+
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+
+    stream.getTracks().forEach(track => track.stop());
+
+    document.getElementById("status").textContent =
+      "Video export finished. Check your Downloads folder.";
+  };
+
+  let index = 0;
+
+  drawScene(index);
+  recorder.start();
+
+  const advance = () => {
+    index++;
+
+    if (index >= 6) {
+      clearInterval(timer);
+      timer = null;
+      recorder.stop();
+      return;
+    }
+
+    drawScene(index);
+  };
+
+  timer = setInterval(advance, 10000);
+
+  document.getElementById("status").textContent =
+    "Recording for 60 seconds. Keep this page open.";
+}
+
+createScenes();
+drawScene(0);
+</script>
 </body>
 </html>
